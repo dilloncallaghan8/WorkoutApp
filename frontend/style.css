@@ -4,17 +4,21 @@ body {
   width: 100%;
   margin: 0;
   font-family: sans-serif;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .app {
-  width: 650px;
+  width: 500px;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   background-color: #fff;
   border: 0.25rem solid #abcea1;
   border-radius: 0.5rem;
   padding: 1rem;
+}
+
+#workouts {
   overflow-y: auto;
 }
 
@@ -22,13 +26,5 @@ body {
   border: 1px solid #abcea1;
   border-radius: 0.5rem;
   padding: 1rem;
-  margin: 0.75rem 0;
-}
-
-.day-pill {
-  display: inline-block;
-  border: 1px solid #abcea1;
-  border-radius: 999px;
-  padding: 0.1rem 0.6rem;
-  font-size: 0.85rem;
+  margin: 1rem;
 }

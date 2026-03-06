@@ -7,7 +7,7 @@ from workout import Workout, WorkoutRequest
 
 workout_router = APIRouter()
 
-workout_list: list[Workout] = []
+workout_list = []
 global_id = 0
 
 
@@ -16,64 +16,64 @@ async def get_all_workouts() -> list[Workout]:
     return workout_list
 
 
-@workout_router.get("/day/{day}")
-async def get_workouts_by_day(day: str) -> list[Workout]:
-    return [w for w in workout_list if w.day.lower().strip() == day.lower().strip()]
-
-
-@workout_router.get("/{id}")
-async def get_workout_by_id(id: Annotated[int, Path(gt=0, le=100000)]) -> Workout:
-    for w in workout_list:
-        if w.id == id:
-            return w
-    raise HTTPException(status_code=404, detail=f"Workout with ID={id} is not found.")
-
-
-@workout_router.post("")
+@workout_router.post("", status_code=201)
 async def create_new_workout(workout: WorkoutRequest) -> Workout:
     global global_id
     global_id += 1
 
     new_workout = Workout(
         id=global_id,
-        day=workout.day.strip(),
-        title=workout.title.strip(),
-        notes=workout.notes.strip(),
+        day=workout.day,
+        title=workout.title,
+        desc=workout.desc,
     )
     workout_list.append(new_workout)
     return new_workout
 
 
 @workout_router.put("/{id}")
-async def update_workout_by_id(
-    id: Annotated[int, Path(gt=0, le=100000)],
-    workout: WorkoutRequest,
+async def edit_workout_by_id(
+    id: Annotated[int, Path(gt=0, le=1000)], workout: WorkoutRequest
 ) -> Workout:
-    for i in range(len(workout_list)):
-        if workout_list[i].id == id:
-            updated = Workout(
-                id=id,
-                day=workout.day.strip(),
-                title=workout.title.strip(),
-                notes=workout.notes.strip(),
-            )
-            workout_list[i] = updated
-            return updated
+    for x in workout_list:
+        if x.id == id:
+            x.day = workout.day
+            x.title = workout.title
+            x.desc = workout.desc
+            return x
 
-    raise HTTPException(status_code=404, detail=f"Workout with ID={id} is not found.")
+    raise HTTPException(
+        status_code=404, detail=f"Workout with ID={id} is not found."
+    )
+
+
+@workout_router.get("/{id}")
+async def get_workout_by_id(id: Annotated[int, Path(gt=0, le=1000)]) -> Workout:
+    for workout in workout_list:
+        if workout.id == id:
+            return workout
+
+    raise HTTPException(
+        status_code=404, detail=f"Workout with ID={id} is not found."
+    )
 
 
 @workout_router.delete("/{id}")
 async def delete_workout_by_id(
     id: Annotated[
         int,
-        Path(gt=0, le=100000, title="ID of the workout to delete"),
+        Path(
+            gt=0,
+            le=1000,
+            title="This is the ID for the desired Workout Item to be deleted",
+        ),
     ],
 ) -> dict:
     for i in range(len(workout_list)):
-        if workout_list[i].id == id:
+        workout = workout_list[i]
+        if workout.id == id:
             workout_list.pop(i)
-            return {"msg": f"Workout with ID={id} is deleted."}
+            return {"msg": f"The workout with ID={id} is deleted."}
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,

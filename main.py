@@ -14,4 +14,6 @@ async def home():
 
 app.include_router(workout_router, tags=["Workouts"], prefix="/workouts")
 
+# the router needs to be before the mount.
+# otherwise, the routes cannot be found.
 app.mount("/", StaticFiles(directory="frontend"), name="static")

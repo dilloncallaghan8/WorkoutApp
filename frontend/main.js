@@ -1,152 +1,160 @@
-const API_BASE = 'http://127.0.0.1:8000';
+let data = [];
+const api = 'http://127.0.0.1:8000/workouts';
+let workoutIdInEdit = 0;
 
-function setMsg(text, isError = false) {
-  const msg = document.getElementById('msg');
-  msg.textContent = text;
-  msg.className = isError ? 'small mt-2 text-danger' : 'small mt-2 text-success';
-}
+document.getElementById('add-btn').addEventListener('click', (e) => {
+  e.preventDefault();
 
-function escapeHtml(str) {
-  return (str || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
+  const msgDiv = document.getElementById('msg');
+  const dayInput = document.getElementById('day');
+  const titleInput = document.getElementById('title');
+  const descInput = document.getElementById('desc');
 
-function renderWorkouts(data) {
-  const div = document.getElementById('workouts');
-  div.innerHTML = '';
-
-  if (!data || data.length === 0) {
-    div.innerHTML = `<div class="text-secondary">No workouts yet.</div>`;
+  if (!dayInput.value || !titleInput.value || !descInput.value) {
+    msgDiv.innerHTML =
+      'Please provide non-empty Day, Title, and Description when creating a new Workout';
     return;
   }
 
-  // Group by day (simple)
-  const groups = {};
-  data.forEach((w) => {
-    const day = (w.day || '').trim() || 'Unassigned';
-    if (!groups[day]) groups[day] = [];
-    groups[day].push(w);
-  });
+  const xhr = new XMLHttpRequest();
+  xhr.onload = () => {
+    if (xhr.status === 201) {
+      const newWorkout = JSON.parse(xhr.response);
+      data.push(newWorkout);
+      renderWorkouts(data);
 
-  Object.keys(groups)
-    .sort((a, b) => a.localeCompare(b))
-    .forEach((day) => {
-      div.innerHTML += `<div class="mt-3 fw-bold"><span class="day-pill">${escapeHtml(
-        day
-      )}</span></div>`;
+      const closeBtn = document.getElementById('close-add-modal');
+      closeBtn.click();
 
-      groups[day].forEach((w) => {
-        div.innerHTML += `
-          <div id="workout-${w.id}" class="workout-box">
-            <div class="d-flex justify-content-between align-items-start gap-2">
-              <div>
-                <div class="fw-bold fs-5">${escapeHtml(w.title)}</div>
-                <pre class="text-secondary ps-2 mb-0">${escapeHtml(w.notes)}</pre>
-              </div>
-              <div class="d-flex flex-column gap-2">
-                <button class="btn btn-sm btn-outline-primary" onclick="editWorkout(${w.id})">Edit</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteWorkout(${w.id})">Delete</button>
-              </div>
-            </div>
-          </div>
-        `;
-      });
+      msgDiv.innerHTML = '';
+      dayInput.value = '';
+      titleInput.value = '';
+      descInput.value = '';
+    }
+  };
+
+  xhr.open('POST', api, true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.send(
+    JSON.stringify({
+      day: dayInput.value,
+      title: titleInput.value,
+      desc: descInput.value,
+    })
+  );
+});
+
+document.getElementById('edit-btn').addEventListener('click', (e) => {
+  e.preventDefault();
+
+  const msgDiv = document.getElementById('msgEdit');
+  const dayInput = document.getElementById('dayEdit');
+  const titleInput = document.getElementById('titleEdit');
+  const descInput = document.getElementById('descEdit');
+
+  if (!dayInput.value || !titleInput.value || !descInput.value) {
+    msgDiv.innerHTML =
+      'Please provide non-empty Day, Title, and Description when updating a Workout';
+    return;
+  }
+
+  const xhr = new XMLHttpRequest();
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      const newWorkout = JSON.parse(xhr.response);
+      const workout = data.find((x) => x.id == workoutIdInEdit);
+      workout.day = newWorkout.day;
+      workout.title = newWorkout.title;
+      workout.desc = newWorkout.desc;
+      renderWorkouts(data);
+
+      const closeBtn = document.getElementById('close-edit-modal');
+      closeBtn.click();
+
+      msgDiv.innerHTML = '';
+      dayInput.value = '';
+      titleInput.value = '';
+      descInput.value = '';
+    }
+  };
+
+  xhr.open('PUT', api + '/' + workoutIdInEdit, true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.send(
+    JSON.stringify({
+      day: dayInput.value,
+      title: titleInput.value,
+      desc: descInput.value,
+    })
+  );
+});
+
+function deleteWorkout(id) {
+  const xhr = new XMLHttpRequest();
+  xhr.onload = () => {
+    if (xhr.status == 200) {
+      data = data.filter((x) => x.id != id);
+      renderWorkouts(data);
+    }
+  };
+
+  xhr.open('DELETE', api + '/' + id, true);
+  xhr.send();
+}
+
+function setWorkoutInEdit(id) {
+  workoutIdInEdit = id;
+  const workout = data.find((x) => x.id == id);
+
+  document.getElementById('dayEdit').value = workout.day;
+  document.getElementById('titleEdit').value = workout.title;
+  document.getElementById('descEdit').value = workout.desc;
+  document.getElementById('msgEdit').innerHTML = '';
+}
+
+function renderWorkouts(data) {
+  const workoutDiv = document.getElementById('workouts');
+  workoutDiv.innerHTML = '';
+  data
+    .sort((a, b) => b.id - a.id)
+    .forEach((x) => {
+      workoutDiv.innerHTML += `
+    <div id="workout-${x.id}" class="workout-box">
+        <div class="fw-bold fs-5 text-success">${x.day}</div>
+        <div class="fw-bold fs-4">${x.title}</div>
+        <pre class="text-secondary ps-3">${x.desc}</pre>
+        <div>
+          <button type="button" class="btn btn-success btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-edit"
+            onClick="setWorkoutInEdit(${x.id})"
+          >
+            Edit
+          </button>
+          <button type="button" class="btn btn-danger btn-sm"
+            onClick="deleteWorkout(${x.id})"
+          >
+            Delete
+          </button>
+        </div>
+    </div>
+    `;
     });
 }
 
 function getAllWorkouts() {
   const xhr = new XMLHttpRequest();
   xhr.onload = () => {
-    if (xhr.status === 200) {
-      const data = JSON.parse(xhr.response) || [];
+    if (xhr.status == 200) {
+      data = JSON.parse(xhr.response) || [];
       renderWorkouts(data);
     }
   };
-  xhr.open('GET', `${API_BASE}/workouts`, true);
+
+  xhr.open('GET', api, true);
   xhr.send();
 }
-
-
-function addWorkout() {
-  const day = document.getElementById('day').value.trim();
-  const title = document.getElementById('title').value.trim();
-  const notes = document.getElementById('notes').value.trim();
-
-  if (!day || !title) {
-    setMsg('Day and Title are required.', true);
-    return;
-  }
-
-  const xhr = new XMLHttpRequest();
-  xhr.onload = () => {
-    if (xhr.status === 200) {
-      setMsg('Workout added!');
-      document.getElementById('title').value = '';
-      document.getElementById('notes').value = '';
-      // refresh list (keep day in the input for fast entry)
-      getAllWorkouts();
-    } else {
-      setMsg(`Error adding workout (status ${xhr.status}).`, true);
-    }
-  };
-
-  xhr.open('POST', `${API_BASE}/workouts`, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(JSON.stringify({ day, title, notes }));
-}
-
-function deleteWorkout(id) {
-  const xhr = new XMLHttpRequest();
-  xhr.onload = () => {
-    if (xhr.status === 200) {
-      setMsg('Workout deleted.');
-      getAllWorkouts();
-    } else {
-      setMsg(`Error deleting workout (status ${xhr.status}).`, true);
-    }
-  };
-  xhr.open('DELETE', `${API_BASE}/workouts/${id}`, true);
-  xhr.send();
-}
-
-function editWorkout(id) {
-  // Basic edit using prompts to keep this project simple
-  const newDay = prompt('New day? (e.g., Monday, Push Day)');
-  if (newDay === null) return;
-
-  const newTitle = prompt('New title? (e.g., Squat)');
-  if (newTitle === null) return;
-
-  const newNotes = prompt('New notes? (e.g., 5x5 @ 225)');
-  if (newNotes === null) return;
-
-  const xhr = new XMLHttpRequest();
-  xhr.onload = () => {
-    if (xhr.status === 200) {
-      setMsg('Workout updated!');
-      getAllWorkouts();
-    } else {
-      setMsg(`Error updating workout (status ${xhr.status}).`, true);
-    }
-  };
-
-  xhr.open('PUT', `${API_BASE}/workouts/${id}`, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(
-    JSON.stringify({
-      day: newDay.trim(),
-      title: newTitle.trim(),
-      notes: newNotes.trim(),
-    })
-  );
-}
-
 
 (() => {
-  document.getElementById('addBtn').addEventListener('click', addWorkout);
   getAllWorkouts();
 })();
