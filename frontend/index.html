@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workout Planner</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body class="py-4">
+    <div class="app mx-auto">
+      <div class="h1">Workout Planner</div>
+      <div class="text-secondary mb-3">Add Workouts to Create Your Plan</div>
+
+      <div class="card p-3 mb-3">
+        <div class="fw-bold mb-2">Add a workout</div>
+
+        <label class="form-label">Workout Day</label>
+        <input id="day" class="form-control mb-2" placeholder='e.g., Monday or "Leg Day"' />
+
+        <label class="form-label">Workout Title</label>
+        <input id="title" class="form-control mb-2" placeholder="e.g., Bench Press" />
+
+        <label class="form-label">Notes</label>
+        <textarea id="notes" class="form-control mb-2" rows="3" placeholder="e.g., 3x8 @ 185"></textarea>
+
+        <button id="addBtn" class="btn btn-primary">Add Workout</button>
+        <div id="msg" class="small mt-2"></div>
+      </div>
+
+      <div id="workouts"></div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script src="main.js"></script>
+  </body>
+</html>
