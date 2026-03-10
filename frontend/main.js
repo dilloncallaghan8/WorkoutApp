@@ -125,11 +125,8 @@ function renderWorkouts(data) {
     grouped[workout.day].push(workout);
   });
 
-  // Sort days
-  const sortedDays = Object.keys(grouped).sort();
-
-  sortedDays.forEach(day => {
-    const dayWorkouts = grouped[day].sort((a, b) => b.id - a.id);
+  Object.keys(grouped).forEach(day => {
+    const dayWorkouts = grouped[day];
     workoutDiv.innerHTML += `<div class="day-group">
       <div class="day-header text-primary">${day}</div>
       ${dayWorkouts.map(x => `
