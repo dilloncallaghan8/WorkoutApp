@@ -115,31 +115,45 @@ function setWorkoutInEdit(id) {
 function renderWorkouts(data) {
   const workoutDiv = document.getElementById('workouts');
   workoutDiv.innerHTML = '';
-  data
-    .sort((a, b) => b.id - a.id)
-    .forEach((x) => {
-      workoutDiv.innerHTML += `
-    <div id="workout-${x.id}" class="workout-box">
-        <div class="fw-bold fs-5 text-success">${x.day}</div>
-        <div class="fw-bold fs-4">${x.title}</div>
-        <pre class="text-secondary ps-3">${x.desc}</pre>
-        <div>
-          <button type="button" class="btn btn-success btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-edit"
-            onClick="setWorkoutInEdit(${x.id})"
-          >
-            Edit
-          </button>
-          <button type="button" class="btn btn-danger btn-sm"
-            onClick="deleteWorkout(${x.id})"
-          >
-            Delete
-          </button>
+
+  // Group workouts by day
+  const grouped = {};
+  data.forEach(workout => {
+    if (!grouped[workout.day]) {
+      grouped[workout.day] = [];
+    }
+    grouped[workout.day].push(workout);
+  });
+
+  // Sort days
+  const sortedDays = Object.keys(grouped).sort();
+
+  sortedDays.forEach(day => {
+    const dayWorkouts = grouped[day].sort((a, b) => b.id - a.id);
+    workoutDiv.innerHTML += `<div class="day-group">
+      <div class="day-header text-primary">${day}</div>
+      ${dayWorkouts.map(x => `
+        <div id="workout-${x.id}" class="workout-box">
+          <div class="fw-bold fs-4">${x.title}</div>
+          <pre class="text-secondary ps-3">${x.desc}</pre>
+          <div>
+            <button type="button" class="btn btn-primary btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#modal-edit"
+              onClick="setWorkoutInEdit(${x.id})"
+            >
+              Edit
+            </button>
+            <button type="button" class="btn btn-danger btn-sm"
+              onClick="deleteWorkout(${x.id})"
+            >
+              Delete
+            </button>
+          </div>
         </div>
-    </div>
-    `;
-    });
+      `).join('')}
+    </div>`;
+  });
 }
 
 function getAllWorkouts() {

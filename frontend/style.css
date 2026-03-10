@@ -13,7 +13,7 @@ body {
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  border: 0.25rem solid #abcea1;
+  border: 0.25rem solid #add8e6;
   border-radius: 0.5rem;
   padding: 1rem;
 }
@@ -23,8 +23,18 @@ body {
 }
 
 .workout-box {
-  border: 1px solid #abcea1;
+  border: 1px solid #add8e6;
   border-radius: 0.5rem;
   padding: 1rem;
   margin: 1rem;
+}
+
+.day-group {
+  margin-bottom: 1.5rem;
+}
+
+.day-header {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
 }

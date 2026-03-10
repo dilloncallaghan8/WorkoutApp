@@ -3,7 +3,7 @@ CS:3980 Midterm Project
 
 Create virtual environment: py -m venv venv
 
-Activate virtual environment: venv\Scripts\activate
+Activate virtual environment: venv\Scripts\activate or  .\venv\Scripts\Activate.ps1
 
 Run App with: uvicorn main:app --reload
 
