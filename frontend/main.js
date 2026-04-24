@@ -1,6 +1,80 @@
 let data = [];
 const api = 'http://127.0.0.1:8000/workouts';
+const registerApi = 'http://127.0.0.1:8000/register';
+const loginApi = 'http://127.0.0.1:8000/login';
 let workoutIdInEdit = 0;
+
+function showWorkoutApp() {
+  document.getElementById('signup-page').classList.add('d-none');
+  document.getElementById('workout-app').classList.remove('d-none');
+  getAllWorkouts();
+}
+
+document.getElementById('signup-btn').addEventListener('click', (e) => {
+  e.preventDefault();
+
+  const usernameInput = document.getElementById('signup-username');
+  const emailInput = document.getElementById('signup-email');
+  const passwordInput = document.getElementById('signup-password');
+  const msgDiv = document.getElementById('signup-msg');
+
+  if (!usernameInput.value || !emailInput.value || !passwordInput.value) {
+    msgDiv.innerHTML = 'Please enter a username, email, and password';
+    return;
+  }
+
+  const xhr = new XMLHttpRequest();
+  xhr.onload = () => {
+    const response = JSON.parse(xhr.response);
+    msgDiv.innerHTML = response.message;
+
+    if (response.message === 'User registered successfully') {
+      showWorkoutApp();
+    }
+  };
+
+  xhr.open('POST', registerApi, true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.send(
+    JSON.stringify({
+      username: usernameInput.value,
+      email: emailInput.value,
+      password: passwordInput.value,
+    })
+  );
+});
+
+document.getElementById('signin-btn').addEventListener('click', (e) => {
+  e.preventDefault();
+
+  const usernameInput = document.getElementById('signup-username');
+  const passwordInput = document.getElementById('signup-password');
+  const msgDiv = document.getElementById('signup-msg');
+
+  if (!usernameInput.value || !passwordInput.value) {
+    msgDiv.innerHTML = 'Please enter your username and password';
+    return;
+  }
+
+  const xhr = new XMLHttpRequest();
+  xhr.onload = () => {
+    const response = JSON.parse(xhr.response);
+    msgDiv.innerHTML = response.message;
+
+    if (response.message === 'Login successful') {
+      showWorkoutApp();
+    }
+  };
+
+  xhr.open('POST', loginApi, true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.send(
+    JSON.stringify({
+      username: usernameInput.value,
+      password: passwordInput.value,
+    })
+  );
+});
 
 document.getElementById('add-btn').addEventListener('click', (e) => {
   e.preventDefault();
@@ -166,6 +240,3 @@ function getAllWorkouts() {
   xhr.send();
 }
 
-(() => {
-  getAllWorkouts();
-})();

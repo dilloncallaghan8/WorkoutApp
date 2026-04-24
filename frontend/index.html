@@ -13,7 +13,32 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="py-4">
-    <div class="app mx-auto">
+    <div id="signup-page" class="signup-page mx-auto">
+      <div class="h1 text-center">Sign Up</div>
+      <div class="mb-3">
+        <label for="signup-username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="signup-username" />
+      </div>
+      <div class="mb-3">
+        <label for="signup-email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="signup-email" />
+      </div>
+      <div class="mb-3">
+        <label for="signup-password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="signup-password" />
+      </div>
+      <div id="signup-msg" class="text-danger mb-3"></div>
+      <div class="d-flex gap-2">
+        <button id="signup-btn" type="button" class="btn btn-primary w-50">
+          Sign Up
+        </button>
+        <button id="signin-btn" type="button" class="btn btn-secondary w-50">
+          Sign In
+        </button>
+      </div>
+    </div>
+
+    <div id="workout-app" class="app mx-auto d-none">
       <div class="h1 text-center">Workout Planner</div>
       <div class="d-flex justify-content-center mb-3">
         <button
