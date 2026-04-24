@@ -24,3 +24,13 @@ Adding a new workout is very similar to adding a todo in the TodoApp in class:
 Once you add multiple workouts, they group together to create a visually pleasing workout planner:
 
 ![alt text](image-2.png)
+
+___
+
+Added Sign-up and Login screen
+
+![alt text](image-3.png)
+
+User account information is being stored correctly in MongoDB:
+
+![alt text](image-4.png)

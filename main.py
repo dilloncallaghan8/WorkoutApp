@@ -34,13 +34,11 @@ class LoginRequest(BaseModel):
 
 @app.on_event("startup")
 async def start_database():
-    # Motor creates the async connection to MongoDB.
+    
     client = AsyncIOMotorClient(MONGODB_URL)
 
-    # The database name comes from the MongoDB URL above.
     database = client.get_default_database()
 
-    # Beanie connects the User document model to the MongoDB collection.
     await init_beanie(database=database, document_models=[User])
 
 
@@ -81,6 +79,4 @@ async def login_user(login_info: LoginRequest):
 
 app.include_router(workout_router, tags=["Workouts"], prefix="/workouts")
 
-# the router needs to be before the mount.
-# otherwise, the routes cannot be found.
 app.mount("/", StaticFiles(directory="frontend"), name="static")
